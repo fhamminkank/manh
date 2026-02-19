@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Tết Việt Nam - Minh Anh</title>
+
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: linear-gradient(to bottom, #8B0000, #B22222);
+        font-family: Arial, sans-serif;
+        text-align: center;
+        color: gold;
+    }
+
+    h1 {
+        position: absolute;
+        width: 100%;
+        top: 18%;
+        font-size: 60px;
+        animation: glow 1.5s infinite alternate;
+    }
+
+    h2 {
+        position: absolute;
+        width: 100%;
+        top: 30%;
+        font-size: 42px;
+        color: #FFD700;
+    }
+
+    h3 {
+        position: absolute;
+        width: 100%;
+        top: 40%;
+        font-size: 32px;
+        color: #FFF5B7;
+        animation: float 2s infinite alternate;
+    }
+
+    @keyframes glow {
+        from {
+            text-shadow: 0 0 10px yellow, 0 0 20px orange;
+        }
+        to {
+            text-shadow: 0 0 20px red, 0 0 30px gold;
+        }
+    }
+
+    @keyframes float {
+        from { transform: translateY(0); }
+        to { transform: translateY(-10px); }
+    }
+
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>🎆 CHÚC MỪNG NĂM MỚI 2026 🎆</h1>
+<h2>🌸 Tết Việt Nam An Khang Thịnh Vượng 🌸</h2>
+<h3>💖 Minh Anh 💖</h3>
+
+<!-- Nhạc nền -->
+<audio autoplay loop>
+    <source src="mot-nam-moi-binh-an.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+// Hoa mai
+function Flower() {
+    this.x = Math.random() * canvas.width;
+    this.y = -10;
+    this.size = Math.random() * 8 + 4;
+    this.speed = Math.random() * 2 + 1;
+}
+
+Flower.prototype.update = function() {
+    this.y += this.speed;
+    if (this.y > canvas.height) {
+        this.y = -10;
+        this.x = Math.random() * canvas.width;
+    }
+};
+
+Flower.prototype.draw = function() {
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+};
+
+// Lì xì
+function LiXi() {
+    this.x = Math.random() * canvas.width;
+    this.y = -20;
+    this.width = 20;
+    this.height = 30;
+    this.speed = Math.random() * 2 + 1;
+}
+
+LiXi.prototype.update = function() {
+    this.y += this.speed;
+    if (this.y > canvas.height) {
+        this.y = -20;
+        this.x = Math.random() * canvas.width;
+    }
+};
+
+LiXi.prototype.draw = function() {
+    ctx.fillStyle = "red";
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+};
+
+// Pháo hoa
+function Firework(x, y) {
+    this.x = x;
+    this.y = y;
+    this.radius = 2;
+    this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    this.dx = (Math.random() - 0.5) * 6;
+    this.dy = (Math.random() - 0.5) * 6;
+    this.life = 100;
+}
+
+let fireworks = [];
+
+function createFirework() {
+    let x = Math.random() * canvas.width;
+    let y = Math.random() * canvas.height / 2;
+    for (let i = 0; i < 50; i++) {
+        fireworks.push(new Firework(x, y));
+    }
+}
+
+for (let i = 0; i < 30; i++) {
+    particles.push(new Flower());
+    particles.push(new LiXi());
+}
+
+function animate() {
+    ctx.fillStyle = "rgba(139,0,0,0.3)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+
+    fireworks.forEach((f, index) => {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+        ctx.fillStyle = f.color;
+        ctx.fill();
+
+        f.x += f.dx;
+        f.y += f.dy;
+        f.life--;
+
+        if (f.life <= 0) fireworks.splice(index, 1);
+    });
+
+    requestAnimationFrame(animate);
+}
+
+setInterval(createFirework, 1000);
+animate();
+</script>
+
+</body>
+</html>

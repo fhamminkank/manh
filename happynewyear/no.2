@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Năm Mới 2026</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* --- PHẦN 1: MÀN HÌNH ĐẾM NGƯỢC --- */
+        #countdown-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #1a2a44 0%, #0b1016 100%); /* Màu xanh tối giống ảnh */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 1s ease-out;
+        }
+
+        .title {
+            color: #f1c40f; /* Màu vàng */
+            font-size: 4rem;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+            text-align: center;
+        }
+
+        .timer-box {
+            background-color: white;
+            color: #333;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 6rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            font-weight: 900;
+        }
+
+        /* --- PHẦN 2: CANVAS PHÁO HOA --- */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="countdown-container">
+        <h1 class="title">ĐẾM NGƯỢC 2026</h1>
+        <div class="timer-box" id="timer">3</div>
+    </div>
+
+    <canvas id="canvas1"></canvas>
+
+    <script>
+        /**
+         * LOGIC ĐẾM NGƯỢC (COUNTDOWN)
+         */
+        const countdownContainer = document.getElementById('countdown-container');
+        const timerElement = document.getElementById('timer');
+        let timeLeft = 3; // Bắt đầu từ 3 giây
+
+        const countdownInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                timerElement.innerText = timeLeft;
+            } else {
+                // Hết giờ -> Ẩn màn hình đếm ngược, hiện pháo hoa
+                clearInterval(countdownInterval);
+                timerElement.innerText = "0";
+                
+                // Hiệu ứng mờ dần
+                countdownContainer.style.opacity = '0';
+                setTimeout(() => {
+                    countdownContainer.style.display = 'none';
+                    startFireworks(); // Bắt đầu chạy hiệu ứng canvas
+                }, 1000);
+            }
+        }, 1000);
+
+        /**
+         * LOGIC CANVAS (HIỆU ỨNG CHỮ HẠT)
+         */
+        const canvas = document.getElementById('canvas1');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+        
+        // Danh sách các từ sẽ hiện lần lượt
+        const textSequence = [
+            "HAPPY NEW YEAR",
+            "CHÚC MỪNG",
+            "NĂM MỚI 2026",
+            "AN KHANG",
+            "THỊNH VƯỢNG"
+        ];
+        
+        let currentTextIndex = 0;
+        let adjustX = 0;
+        let adjustY = 0;
+
+        // Xử lý khi thay đổi kích thước màn hình
+        window.addEventListener('resize', function(){
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Class Hạt (Particle)
+        class Particle {
+            constructor(x, y){
+                this.x = x;
+                this.y = y;
+                this.size = 2; // Kích thước hạt
+                this.baseX = x;
+                this.baseY = y;
+                this.density = (Math.random() * 30) + 1;
+                // Màu ngẫu nhiên rực rỡ
+                this.color = 'hsl(' + Math.random() * 360 + ', 100%, 50%)'; 
+            }
+            draw(){
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            update(){
+                // Hiệu ứng rung nhẹ để giống pháo hoa cháy
+                let dx = this.x - this.baseX;
+                let dy = this.y - this.baseY;
+                
+                // Cho hạt rung rinh tại chỗ
+                this.x = this.baseX + (Math.random() * 2 - 1); 
+                this.y = this.baseY + (Math.random() * 2 - 1);
+            }
+        }
+
+        // Hàm khởi tạo text để lấy toạ độ điểm ảnh
+        function init(textInput) {
+            particlesArray = [];
+            // Vẽ chữ lên canvas (ẩn) để quét vị trí pixel
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            // Cỡ chữ responsive
+            let fontSize = Math.min(window.innerWidth / 10, 100); 
+            ctx.font =  '900 ' + fontSize + 'px Montserrat'; 
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            ctx.fillText(textInput, canvas.width/2, canvas.height/2);
+
+            // Quét dữ liệu hình ảnh
+            // area quét là toàn màn hình
+            const textCoordinates = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            
+            // Lặp qua từng pixel (bước nhảy gap = 5 để không quá nặng máy)
+            const gap = 4; 
+            for (let y = 0; y < textCoordinates.height; y += gap){
+                for (let x = 0; x < textCoordinates.width; x += gap){
+                    // Kiểm tra độ trong suốt (alpha) của pixel
+                    // Dữ liệu pixel là mảng [r, g, b, a, r, g, b, a...]
+                    // index của alpha là vị trí thứ 4 (index + 3)
+                    const index = (y * 4 * textCoordinates.width) + (x * 4) + 3;
+                    
+                    if (textCoordinates.data[index] > 128){
+                        // Nếu pixel không trong suốt -> tạo hạt ở vị trí đó
+                        let positionX = x;
+                        let positionY = y;
+                        particlesArray.push(new Particle(positionX, positionY));
+                    }
+                }
+            }
+            // Xóa chữ gốc màu trắng đi, chỉ để lại mảng hạt
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function animate(){
+            // Tạo hiệu ứng vệt mờ (trail effect)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particlesArray.length; i++){
+                particlesArray[i].draw();
+                particlesArray[i].update();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // Hàm chuyển đổi chữ
+        function startTextSequence() {
+            // Hiện chữ đầu tiên
+            init(textSequence[currentTextIndex]);
+
+            setInterval(() => {
+                currentTextIndex++;
+                if (currentTextIndex >= textSequence.length) {
+                    currentTextIndex = 0; // Lặp lại từ đầu
+                }
+                init(textSequence[currentTextIndex]);
+            }, 3000); // Chuyển chữ mỗi 3 giây
+        }
+
+        function startFireworks() {
+            startTextSequence();
+            animate();
+            
+            // Thêm âm thanh pháo hoa nếu muốn (tuỳ chọn)
+            // let audio = new Audio('firework_sound.mp3');
+            // audio.play();
+        }
+
+    </script>
+</body>
+</html>
