@@ -6,121 +6,103 @@
 
     <style>
         :root {
-            --primary: #1f3a8a;
-            --secondary: #f1f5f9;
-            --border: #e5e7eb;
-            --text-dark: #1f2933;
-            --text-light: #6b7280;
-            --success: #16a34a;
-            --white: #ffffff;
-        }
+    --primary: #334155;   
+    --secondary: #f8fafc; 
+    --border: #e2e8f0;     
+    --text: #0f172a;       
+    --success: #15803d;   
+}
 
-        body {
-            font-family: "Times New Roman", serif;
-            background-color: var(--secondary);
-            margin: 0;
-            padding: 40px;
-            color: var(--text-dark);
-        }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #ffffff;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
 
-        .container {
-            max-width: 760px;
-            margin: auto;
-            background: var(--white);
-            padding: 32px;
-            border-radius: 14px;
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-        }
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
 
-        h1 {
-            text-align: center;
-            margin: 0 0 24px;
-            color: var(--primary);
-        }
+h1 {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 30px;
+    color: var(--primary);
+    border-left: 5px solid var(--primary);
+    padding-left: 15px;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
 
-        caption {
-            caption-side: top;
-            margin-bottom: 12px;
-            font-weight: 600;
-            color: var(--text-light);
-        }
+caption {
+    text-align: left;
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
 
-        thead th {
-            position: sticky;
-            top: 0;
-            background-color: var(--primary);
-            color: white;
-            font-weight: 600;
-            padding: 14px;
-        }
+thead th {
+    background-color: var(--secondary);
+    color: var(--primary);
+    font-weight: 600;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid var(--border);
+}
 
-        th, td {
-            border: 1px solid var(--border);
-            padding: 12px 14px;
-        }
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
 
-        tbody tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
 
-        tbody tr:hover {
-            background-color: #eef2ff;
-        }
+td:nth-child(1), 
+th:nth-child(1),
+td:nth-child(4),
+th:nth-child(4) {
+    text-align: center;
+}
 
-        td:nth-child(1),
-        td:nth-child(4) {
-            text-align: center;
-            font-weight: 600;
-        }
+tbody tr:hover {
+    background-color: #f1f5f9;
+}
 
-        td:nth-child(2),
-        td:nth-child(3) {
-            text-align: left;
-        }
+.score {
+    font-weight: 700;
+    color: var(--success);
+}
 
-        .score {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background-color: #dcfce7;
-            color: var(--success);
-            font-weight: 700;
-            font-size: 14px;
-        }
+.average {
+    background-color: var(--secondary);
+    padding: 15px;
+    border-radius: 6px;
+    text-align: right;
+    font-weight: 500;
+}
 
-        .average {
-            text-align: right;
-            font-size: 16px;
-            font-weight: 600;
-            color: #374151;
-        }
+.average span {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-left: 10px;
+}
 
-        .average span {
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            body {
-                padding: 20px;
-            }
-
-            .container {
-                padding: 20px;
-            }
-
-            th, td {
-                font-size: 14px;
-                padding: 10px;
-            }
-        }
+@media (max-width: 600px) {
+    .container { border: none; padding: 10px; }
+    h1 { font-size: 20px; }
+}
     </style>
 </head>
 
