@@ -1,82 +1,129 @@
-#include <bits/stdc++.h>
-using namespace std;
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Coverage Calculator</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h2 { color: #333; margin-top: 0; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
 
-using ll = long long;
+<div class="container">
+    <h2>Tính toán vùng phủ Robot</h2>
+    
+    <div class="input-group">
+        <label for="n_val">Độ dài đoạn N:</label>
+        <input type="number" id="n_val" placeholder="Ví dụ: 100">
+    </div>
 
-ll N;
-int K;
-vector<pair<ll,ll>> blockSeg;   // (Li, Ri)
+    <div class="input-group">
+        <label for="k_val">Số vật cản K:</label>
+        <input type="number" id="k_val" placeholder="Ví dụ: 2">
+    </div>
 
-/* Gộp các đoạn và trả về tổng độ dài */
-ll merged_length(vector<pair<ll,ll>> v) {
-    if (v.empty()) return 0;
-    sort(v.begin(), v.end());
-    ll total = 0;
-    ll l = v[0].first, r = v[0].second;
+    <div class="input-group">
+        <label for="segments">Các đoạn vật cản (mỗi dòng một cặp L R):</label>
+        <textarea id="segments" rows="4" placeholder="10 20&#10;35 50"></textarea>
+    </div>
 
-    for (int i = 1; i < (int)v.size(); i++) {
-        if (v[i].first > r) {
-            total += r - l;
-            l = v[i].first;
-            r = v[i].second;
-        } else {
-            r = max(r, v[i].second);
+    <button onclick="calculate()">Tính toán kết quả</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function mergedLength(v) {
+        if (v.length === 0) return 0;
+        // Sắp xếp các đoạn theo điểm bắt đầu
+        v.sort((a, b) => a[0] - b[0]);
+
+        let total = 0;
+        let l = v[0][0];
+        let r = v[0][1];
+
+        for (let i = 1; i < v.length; i++) {
+            if (v[i][0] > r) {
+                total += r - l;
+                l = v[i][0];
+                r = v[i][1];
+            } else {
+                r = Math.max(r, v[i][1]);
+            }
         }
-    }
-    total += r - l;
-    return total;
-}
-
-
-vector<pair<ll,ll>> blocked_by_robot(ll x) {
-    vector<pair<ll,ll>> res;
-    for (auto &seg : blockSeg) {
-        ll L = 2 * seg.first - x;
-        ll R = 2 * seg.second - x;
-        if (R <= 0 || L >= N) continue;
-        L = max(L, 0LL);
-        R = min(R, N);
-        if (L < R) res.push_back({L, R});
-    }
-    return res;
-}
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    cin >> N >> K;
-    blockSeg.resize(K);
-    for (int i = 0; i < K; i++) {
-        cin >> blockSeg[i].first >> blockSeg[i].second;
+        total += r - l;
+        return total;
     }
 
-    /* Sinh các vị trí robot cần xét */
-    vector<ll> candidates;
-    candidates.push_back(0);
-    candidates.push_back(N);
-
-    for (auto &seg : blockSeg) {
-        ll a = 2 * seg.first;
-        ll b = 2 * seg.second;
-        if (0 <= a && a <= N) candidates.push_back(a);
-        if (0 <= b && b <= N) candidates.push_back(b);
+    function blockedByRobot(x, N, blockSeg) {
+        let res = [];
+        for (let seg of blockSeg) {
+            let L = 2 * seg[0] - x;
+            let R = 2 * seg[1] - x;
+            if (R <= 0 || L >= N) continue;
+            L = Math.max(L, 0);
+            R = Math.min(R, N);
+            if (L < R) res.push([L, R]);
+        }
+        return res;
     }
 
-    sort(candidates.begin(), candidates.end());
-    candidates.erase(unique(candidates.begin(), candidates.end()), candidates.end());
+    function calculate() {
+        const N = parseInt(document.getElementById('n_val').value);
+        const K = parseInt(document.getElementById('k_val').value);
+        const segmentsText = document.getElementById('segments').value.trim();
+        
+        if (isNaN(N) || isNaN(K)) {
+            alert("Vui lòng nhập đầy đủ N và K");
+            return;
+        }
 
-    int M = candidates.size();
+        const lines = segmentsText.split('\n');
+        let blockSeg = [];
+        for (let i = 0; i < Math.min(K, lines.length); i++) {
+            let parts = lines[i].trim().split(/\s+/).map(Number);
+            if (parts.length >= 2) blockSeg.push([parts[0], parts[1]]);
+        }
 
-    /* Tiền xử lý: blocked[i] = các đoạn bị che của robot i */
-    vector<vector<pair<ll,ll>>> blocked(M);
-    for (int i = 0; i < M; i++) {
-        blocked[i] = blocked_by_robot(candidates[i]);
+        // Sinh các vị trí robot tiềm năng
+        let candidates = [0, N];
+        for (let seg of blockSeg) {
+            let a = 2 * seg[0];
+            let b = 2 * seg[1];
+            if (a >= 0 && a <= N) candidates.push(a);
+            if (b >= 0 && b <= N) candidates.push(b);
+        }
+        // Loại bỏ trùng lặp và sắp xếp
+        candidates = [...new Set(candidates)].sort((a, b) => a - b);
+
+        let blocked = candidates.map(c => blockedByRobot(c, N, blockSeg));
+        let maxCovered = 0;
+
+        // Thử mọi cặp robot
+        for (let i = 0; i < candidates.length; i++) {
+            for (let j = i + 1; j < candidates.length; j++) {
+                let allBlocked = [...blocked[i], ...blocked[j]];
+                maxCovered = Math.max(maxCovered, mergedLength(allBlocked));
+            }
+        }
+
+        // Hiển thị kết quả
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'success';
+        resultDiv.innerHTML = `<strong>Kết quả:</strong> Tổng độ dài bị che phủ lớn nhất là <strong>${maxCovered}</strong>`;
     }
+</script>
 
-    ll ans = 0;
-
-    /* Thử mọi cặp robot */
-    for (int i = 0; i < M; i++) {
-        for (int j = i + 1; j < M; j++) {
-            vector<pair<ll,ll>> allBlocked = blocked[i];
+</body>
+</html>
